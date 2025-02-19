@@ -10,7 +10,10 @@
     </parent>
 
     <artifactId>infra</artifactId>
-
     <packaging>pom</packaging>
+
+    <modules>
+        <module>discovery-server</module>
+    </modules>
 
 </project>
