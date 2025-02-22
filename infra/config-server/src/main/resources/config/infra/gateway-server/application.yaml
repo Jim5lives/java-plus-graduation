@@ -6,9 +6,7 @@ spring:
     name: gateway-server
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
+      discovery.locator.enabled: true
       routes:
         - id: main_service_route
           uri: lb://main-service
