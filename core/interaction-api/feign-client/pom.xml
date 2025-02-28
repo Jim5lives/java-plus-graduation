@@ -5,17 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.practicum</groupId>
-        <artifactId>explore-with-me</artifactId>
+        <artifactId>interaction-api</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <packaging>pom</packaging>
-    <artifactId>core</artifactId>
+    <artifactId>feign-client</artifactId>
 
-    <modules>
-        <module>main-service</module>
-        <module>user-service</module>
-        <module>interaction-api</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>ru.practicum</groupId>
+            <artifactId>dto</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>
