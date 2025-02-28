@@ -1,4 +1,4 @@
-package ru.practicum.ewm.user.dto;
+package ru.yandex.practicum.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

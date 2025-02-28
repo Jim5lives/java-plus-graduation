@@ -1,4 +1,4 @@
-package ru.practicum.ewm.errorHandler.exception;
+package ru.yandex.practicum.exception;
 
 public class ConflictDataException extends RuntimeException {
     public ConflictDataException(String message) {

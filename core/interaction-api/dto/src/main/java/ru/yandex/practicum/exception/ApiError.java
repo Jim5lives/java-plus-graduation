@@ -1,4 +1,4 @@
-package ru.practicum.ewm.errorHandler.model;
+package ru.yandex.practicum.exception;
 
 import lombok.AccessLevel;
 import lombok.Data;

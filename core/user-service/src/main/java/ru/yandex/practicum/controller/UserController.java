@@ -1,4 +1,4 @@
-package ru.practicum.ewm.user;
+package ru.yandex.practicum.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.user.dto.FindUsersParams;
-import ru.practicum.ewm.user.dto.NewUserRequest;
-import ru.practicum.ewm.user.dto.UserDto;
-import ru.practicum.ewm.user.service.UserService;
+import ru.yandex.practicum.request.FindUsersParams;
+import ru.yandex.practicum.request.NewUserRequest;
+import ru.yandex.practicum.model.UserDto;
+import ru.yandex.practicum.service.UserService;
 
 import java.util.List;
 

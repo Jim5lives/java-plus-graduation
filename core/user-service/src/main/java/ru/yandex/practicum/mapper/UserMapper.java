@@ -1,10 +1,10 @@
-package ru.practicum.ewm.user.mapper;
+package ru.yandex.practicum.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.practicum.ewm.user.dto.NewUserRequest;
-import ru.practicum.ewm.user.dto.UserDto;
-import ru.practicum.ewm.user.model.User;
+import ru.yandex.practicum.model.User;
+import ru.yandex.practicum.request.NewUserRequest;
+import ru.yandex.practicum.model.UserDto;
 import java.util.List;
 
 @Mapper(componentModel = "spring")

@@ -1,4 +1,4 @@
-package ru.practicum.ewm.errorHandler;
+package ru.yandex.practicum.error;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -7,15 +7,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.ewm.errorHandler.exception.*;
-import ru.practicum.ewm.errorHandler.model.ApiError;
+import ru.yandex.practicum.exception.ApiError;
+import ru.yandex.practicum.exception.ConflictDataException;
+import ru.yandex.practicum.exception.NotFoundException;
+import ru.yandex.practicum.exception.ValidationException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-@RestControllerAdvice
 @Slf4j
-public class ErrorHandler {
+@RestControllerAdvice
+public class UserServiceErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -46,20 +48,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiError handleConditionsNotMetException(ConditionsNotMetException e) {
-        return new ApiError(getStackTrace(e), e.getMessage(),
-                "For the requested operation the conditions are not met.", HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiError handleAccessForbiddenException(AccessForbiddenException e) {
-        return new ApiError(getStackTrace(e), e.getMessage(),
-                "No rights for requested operation", HttpStatus.FORBIDDEN);
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflictDataException(ConflictDataException e) {
         return new ApiError(getStackTrace(e), e.getMessage(),
@@ -73,3 +61,4 @@ public class ErrorHandler {
         return stringWriter.toString();
     }
 }
+

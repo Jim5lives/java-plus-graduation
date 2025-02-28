@@ -1,17 +1,17 @@
-package ru.practicum.ewm.user.service;
+package ru.yandex.practicum.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.errorHandler.exception.ConflictDataException;
-import ru.practicum.ewm.errorHandler.exception.NotFoundException;
-import ru.practicum.ewm.user.dto.FindUsersParams;
-import ru.practicum.ewm.user.dto.NewUserRequest;
-import ru.practicum.ewm.user.dto.UserDto;
-import ru.practicum.ewm.user.mapper.UserMapper;
-import ru.practicum.ewm.user.model.User;
-import ru.practicum.ewm.user.repository.UserRepository;
+import ru.yandex.practicum.exception.ConflictDataException;
+import ru.yandex.practicum.exception.NotFoundException;
+import ru.yandex.practicum.mapper.UserMapper;
+import ru.yandex.practicum.model.User;
+import ru.yandex.practicum.repository.UserRepository;
+import ru.yandex.practicum.request.FindUsersParams;
+import ru.yandex.practicum.request.NewUserRequest;
+import ru.yandex.practicum.model.UserDto;
 
 import java.util.List;
 
