@@ -1,12 +1,11 @@
 package ru.yandex.practicum.controller;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.UserServiceFeignClient;
 import ru.yandex.practicum.request.FindUsersParams;
 import ru.yandex.practicum.request.NewUserRequest;
 import ru.yandex.practicum.model.UserDto;
@@ -19,28 +18,24 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "admin/users")
-public class UserController {
+public class UserController implements UserServiceFeignClient {
     private final UserService userService;
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public UserDto createUser(@Valid @RequestBody NewUserRequest request) {
+    @Override
+    public UserDto createUser(NewUserRequest request) throws FeignException {
         log.info("Received request to create new user: {}", request.getName());
         return userService.createUser(request);
     }
 
-    @GetMapping
-    public List<UserDto> findUsers(@RequestParam(required = false) List<Long> ids,
-                                   @RequestParam(value = "from", defaultValue = "0") int from,
-                                   @RequestParam(value = "size", defaultValue = "10") int size) {
+    @Override
+    public List<UserDto> findUsers(List<Long> ids, int from, int size) throws FeignException {
         FindUsersParams params = new FindUsersParams(ids, from, size);
         log.info("Received request to find users with params: {}", params);
         return userService.findUsers(params);
     }
 
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@PathVariable @Positive long id) {
+    @Override
+    public void deleteUser(long id) throws FeignException {
         log.info("Received request to delete user with id: {}", id);
         userService.deleteUser(id);
     }
