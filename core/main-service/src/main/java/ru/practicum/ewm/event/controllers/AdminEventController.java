@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.dto.*;
-import ru.practicum.ewm.event.model.EventState;
+import ru.yandex.practicum.dto.EventState;
 import ru.practicum.ewm.event.service.EventService;
 
 import java.time.LocalDateTime;

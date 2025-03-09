@@ -11,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.event.dto.*;
 import ru.practicum.ewm.event.service.EventService;
+import ru.yandex.practicum.dto.ParamEventDto;
 
 import java.util.Collection;
 

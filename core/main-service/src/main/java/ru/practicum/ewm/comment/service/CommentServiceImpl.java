@@ -13,7 +13,7 @@ import ru.practicum.ewm.comment.repository.CommentRepository;
 import ru.yandex.practicum.exception.AccessForbiddenException;
 import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
-import ru.practicum.ewm.event.dto.ParamEventDto;
+import ru.yandex.practicum.dto.ParamEventDto;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.user.model.User;

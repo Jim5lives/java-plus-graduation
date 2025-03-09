@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.dto.UserShortDto;
 import ru.yandex.practicum.exception.ConflictDataException;
 import ru.yandex.practicum.exception.NotFoundException;
 import ru.yandex.practicum.mapper.UserMapper;
 import ru.yandex.practicum.model.User;
 import ru.yandex.practicum.repository.UserRepository;
-import ru.yandex.practicum.request.FindUsersParams;
-import ru.yandex.practicum.request.NewUserRequest;
-import ru.yandex.practicum.model.UserDto;
+import ru.yandex.practicum.dto.FindUsersParams;
+import ru.yandex.practicum.dto.NewUserRequest;
+import ru.yandex.practicum.dto.UserDto;
 
 import java.util.List;
 
@@ -52,6 +53,13 @@ public class UserServiceImpl implements UserService {
                     return new NotFoundException("Not found user with ID = " + id);
                 });
         userRepository.delete(userToDelete);
+    }
+
+    @Override
+    public List<UserShortDto> findShortUsers(List<Long> ids) {
+        List<User> users = userRepository.findAllById(ids);
+        log.info("Search for users with ids {} completed", ids);
+        return userMapper.mapToUserShortDto(users);
     }
 
     private void isEmailUnique(String email) {

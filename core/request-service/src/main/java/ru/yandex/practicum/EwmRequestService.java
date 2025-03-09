@@ -8,8 +8,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-public class EwmUserService {
+public class EwmRequestService {
     public static void main(String[] args) {
-        SpringApplication.run(EwmUserService.class, args);
+        SpringApplication.run(EwmRequestService.class, args);
     }
 }

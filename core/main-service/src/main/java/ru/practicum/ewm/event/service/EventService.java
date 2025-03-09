@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.service;
 
 import ru.practicum.ewm.event.dto.*;
+import ru.yandex.practicum.dto.ParamEventDto;
 
 import java.util.Collection;
 
