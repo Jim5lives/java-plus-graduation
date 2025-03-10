@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.UserServiceFeignClient;
+import ru.yandex.practicum.EventServiceFeignClient;
 import ru.yandex.practicum.dto.CommentDto;
 import ru.yandex.practicum.dto.EventWithInitiatorDto;
 import ru.yandex.practicum.dto.NewCommentRequest;
