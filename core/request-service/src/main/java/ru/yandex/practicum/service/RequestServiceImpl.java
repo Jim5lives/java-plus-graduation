@@ -31,7 +31,7 @@ import java.util.List;
 public class RequestServiceImpl implements RequestService {
 
     private final RequestRepository requestRepository;
-    //private final EventServiceFeignClient eventClient;
+    private final EventServiceFeignClient eventClient;
     private final UserServiceFeignClient userClient;
     private final RequestMapper requestMapper;
 
@@ -107,8 +107,7 @@ public class RequestServiceImpl implements RequestService {
 
     private EventWithInitiatorDto getEvent(long eventId) {
         try {
-            return null;
-           // return eventClient.findEventWithInitiator(eventId);
+            return eventClient.findEventWithInitiator(eventId);
         } catch (FeignException e) {
             log.error("Not found event with ID = {}", eventId);
             throw  new NotFoundException(String.format("Not found event with ID = %d", eventId));
