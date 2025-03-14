@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.ewm.dto.category.CategoryDto;
-import ru.yandex.practicum.dto.UserShortDto;
+import ru.practicum.ewm.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 

@@ -2,6 +2,7 @@ package ru.practicum.ewm.service.event;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -10,9 +11,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.StatClient;
+import ru.practicum.ewm.dto.EventWithInitiatorDto;
+import ru.practicum.ewm.dto.HitDto;
+import ru.practicum.ewm.dto.ParamDto;
+import ru.practicum.ewm.dto.StatDto;
 import ru.practicum.ewm.model.Category;
 import ru.practicum.ewm.repository.CategoryRepository;
-import ru.practicum.ewm.dto.*;
 import ru.practicum.ewm.dto.event.AdminSearchEventDto;
 import ru.practicum.ewm.dto.event.EventFullDto;
 import ru.practicum.ewm.dto.event.EventShortDto;
@@ -24,35 +28,36 @@ import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.model.ActionState;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.Sorting;
-import ru.yandex.practicum.dto.EventState;
-import ru.yandex.practicum.exception.ConflictDataException;
-import ru.yandex.practicum.exception.NotFoundException;
+import ru.practicum.ewm.RequestServiceFeignClient;
+import ru.practicum.ewm.UserServiceFeignClient;
+import ru.practicum.ewm.dto.EventState;
+import ru.practicum.ewm.dto.UserShortDto;
+import ru.practicum.ewm.exception.ConflictDataException;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.mapper.EventMapper;
-import ru.practicum.ewm.event.model.QEvent;
+import ru.practicum.ewm.model.QEvent;
 import ru.practicum.ewm.repository.EventRepository;
-import ru.yandex.practicum.dto.ParamEventDto;
-import ru.yandex.practicum.dto.RequestCountDto;
-import ru.practicum.ewm.request.repository.RequestRepository;
-import ru.practicum.ewm.user.model.User;
-import ru.practicum.ewm.user.repository.UserRepository;
+import ru.practicum.ewm.dto.ParamEventDto;
+import ru.practicum.ewm.dto.RequestCountDto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final UserServiceFeignClient userClient;
     private final CategoryRepository categoryRepository;
-    private final RequestRepository requestRepository;
+    private final RequestServiceFeignClient requestClient;
     private final EventMapper eventMapper;
     private final StatClient statClient;
 
@@ -60,21 +65,21 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public Collection<EventShortDto> findBy(PrivateSearchEventDto privateSearchEventDto) {
-        User user = getUser(privateSearchEventDto.getUserId());
-        List<Event> events = eventRepository
-                .findByInitiator(user, privateSearchEventDto.getSize(), privateSearchEventDto.getFrom());
+    public Collection<EventShortDto> findBy(PrivateSearchEventDto params) {
+        Pageable pageable = PageRequest.of(params.getFrom() / params.getSize(), params.getSize());
+        List<Event> events = eventRepository.findAllByInitiatorId(params.getUserId(), pageable);
         return mapToShortDto(events);
     }
 
     @Override
     @Transactional
     public EventFullDto create(long userId, NewEventDto newEvent) {
-        User user = getUser(userId);
+        UserShortDto user = getUser(userId);
         Category category = getCategory(newEvent.getCategory());
         Event event = eventMapper.map(newEvent);
         event.setCategory(category);
-        event.setInitiator(user);
+        event.setInitiatorId(user.getId());
+        event.setInitiatorName(user.getName());
         event.setCreatedOn(LocalDateTime.now());
         event.setState(EventState.PENDING);
         eventRepository.save(event);
@@ -153,6 +158,12 @@ public class EventServiceImpl implements EventService {
         return eventMapper.mapToFullDto(event, stat.get(event.getId()), countConfirmedRequest.get(event.getId()));
     }
 
+    @Override
+    public EventWithInitiatorDto findBy(long eventId) {
+        Event event = getEvent(eventId);
+        return eventMapper.mapToInitiatorDto(event);
+    }
+
     private Category getCategory(long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> {
@@ -169,12 +180,13 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    private User getUser(long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.error("Not found user with ID = {}", userId);
-                    return new NotFoundException(String.format("Not found user with ID = %d", userId));
-                });
+    private UserShortDto getUser(long userId) {
+        try {
+            return userClient.findShortUsers(List.of(userId)).getFirst();
+        } catch (FeignException e) {
+            log.error("Not found user with ID = {}", userId);
+            throw new NotFoundException(String.format("Not found user with ID = %d", userId));
+        }
     }
 
     private Event getEvent(long eventId) {
@@ -188,9 +200,8 @@ public class EventServiceImpl implements EventService {
     private Event getUserEvent(ParamEventDto paramEventDto) {
         long userId = paramEventDto.getUserId();
         long eventId = paramEventDto.getEventId();
-        User user = getUser(userId);
         Event event = getEvent(eventId);
-        if (event.getInitiator() != user) {
+        if (event.getInitiatorId() != userId) {
             log.error("Event with ID = {} is not found", eventId);
             throw new NotFoundException(
                     String.format("Not found event with ID = %d", eventId));
@@ -199,16 +210,21 @@ public class EventServiceImpl implements EventService {
     }
 
     private Map<Long, Long> getCountConfirmedRequest(List<Event> events) {
-        return requestRepository.findConfirmedRequest(events)
-                .collect(Collectors.toMap(RequestCountDto::getEventId, RequestCountDto::getCount));
+        List<Long> ids = events.stream().map(Event::getId).toList();
+        try {
+            return requestClient.findConfirmedRequest(ids).stream()
+                    .collect(Collectors.toMap(RequestCountDto::getEventId, RequestCountDto::getCount));
+        } catch (RuntimeException e) {
+            return new HashMap<>();
+        }
     }
 
     private Map<Long, Long> getStat(List<Event> events) {
         List<String> uris = events.stream().map(this::createEventUri).toList();
         String start = events.stream().map(Event::getCreatedOn).sorted().findFirst().get().format(dateTimeFormatter);
         String end = LocalDateTime.now().format(dateTimeFormatter);
-        ParamDto paramDto = new ParamDto(start, end, uris, true);
-        List<StatDto> statDto = statClient.stat(paramDto);
+        ParamDto statParam = new ParamDto(start, end, uris, true);
+        List<StatDto> statDto = statClient.stat(statParam);
         return statDto.stream().map(dto -> new StatEventDto(parseUri(dto.getUri()), dto.getHits()))
                 .collect(Collectors.toMap(StatEventDto::getEventId, StatEventDto::getHits));
     }
@@ -281,7 +297,7 @@ public class EventServiceImpl implements EventService {
         BooleanBuilder searchParams = new BooleanBuilder();
 
         if (params.getUsers() != null && !params.getUsers().isEmpty()) {
-            searchParams.and(QEvent.event.initiator.id.in(params.getUsers()));
+            searchParams.and(QEvent.event.initiatorId.in(params.getUsers()));
         }
         if (params.getStates() != null && !params.getStates().isEmpty()) {
             searchParams.and(QEvent.event.state.in(params.getStates()));
@@ -334,7 +350,7 @@ public class EventServiceImpl implements EventService {
     private List<EventShortDto> mapToShortDto(List<Event> events) {
         Map<Long, Long> countConfirmedRequest = getCountConfirmedRequest(events);
         Map<Long, Long> stat = getStat(events);
-        return  events.stream()
+        return events.stream()
                 .map(event -> {
                     Long confirmedCount = countConfirmedRequest.get(event.getId());
                     Long statValue = stat.get(event.getId());

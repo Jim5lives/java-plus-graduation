@@ -13,7 +13,7 @@ import ru.practicum.ewm.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.ewm.mapper.CompilationMapper;
 import ru.practicum.ewm.model.Compilation;
 import ru.practicum.ewm.repository.CompilationRepository;
-import ru.yandex.practicum.exception.NotFoundException;
+import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.repository.EventRepository;
 

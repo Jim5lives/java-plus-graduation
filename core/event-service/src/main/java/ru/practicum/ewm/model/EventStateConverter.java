@@ -2,7 +2,7 @@ package ru.practicum.ewm.model;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.dto.EventState;
+import ru.practicum.ewm.dto.EventState;
 
 
 @Component
