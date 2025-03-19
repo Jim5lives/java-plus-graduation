@@ -209,10 +209,10 @@ services:
       - |
         set -e
         psql -U root -h ewm-db -d postgres -v ON_ERROR_STOP=1 <<-EOSQL
-        create database ewm-user;
-        create database ewm-comment;
-        create database ewm-event;
-        create database ewm-request;
+        create database "ewm-user";
+        create database "ewm-comment";
+        create database "ewm-event";
+        create database "ewm-request";
         EOSQL
 
 networks:
