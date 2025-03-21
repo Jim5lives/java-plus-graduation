@@ -19,6 +19,7 @@
         <module>stats-dto</module>
         <module>stats-server</module>
         <module>aggregator</module>
+        <module>analyzer</module>
     </modules>
 
 </project>
