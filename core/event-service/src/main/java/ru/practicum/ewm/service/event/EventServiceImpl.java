@@ -185,7 +185,11 @@ public class EventServiceImpl implements EventService {
     }
 
     private Category checkCategory(Optional<Long> categoryId) {
-        return categoryId.map(this::getCategory).orElse(null);
+        if (categoryId != null) {
+            return getCategory(categoryId.get());
+        } else {
+            return null;
+        }
     }
 
     private UserShortDto getUser(long userId) {
