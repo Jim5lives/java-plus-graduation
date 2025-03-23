@@ -20,3 +20,11 @@ spring:
     url: jdbc:postgresql://localhost:5432/ewm-request
     username: root
     password: root
+
+grpc:
+  client:
+    collector-client:
+      address: 'discovery:///collector'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
