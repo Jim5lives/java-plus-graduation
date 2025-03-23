@@ -97,6 +97,11 @@ public class RequestServiceImpl implements RequestService {
         return requests;
     }
 
+    @Override
+    public boolean isUserParticipatedInEvent(long userId, long eventId) {
+        return requestRepository.existsByUserIdAndEventId(userId, eventId);
+    }
+
     private UserShortDto getUser(long userId) {
         try {
             return userClient.findShortUsers(List.of(userId)).getFirst();

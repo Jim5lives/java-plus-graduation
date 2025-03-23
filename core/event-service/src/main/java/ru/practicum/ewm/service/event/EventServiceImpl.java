@@ -21,7 +21,6 @@ import ru.practicum.ewm.dto.event.EventShortDto;
 import ru.practicum.ewm.dto.event.NewEventDto;
 import ru.practicum.ewm.dto.event.PrivateSearchEventDto;
 import ru.practicum.ewm.dto.event.PublicSearchEventParams;
-import ru.practicum.ewm.dto.event.StatEventDto;
 import ru.practicum.ewm.dto.event.UpdateEventUserRequest;
 import ru.practicum.ewm.model.ActionState;
 import ru.practicum.ewm.model.Event;
@@ -186,11 +185,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private Category checkCategory(Optional<Long> categoryId) {
-        if (categoryId != null) {
-            return getCategory(categoryId.get());
-        } else {
-            return null;
-        }
+        return categoryId.map(this::getCategory).orElse(null);
     }
 
     private UserShortDto getUser(long userId) {

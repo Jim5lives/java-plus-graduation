@@ -45,5 +45,8 @@ public class PrivateRequestController implements RequestServiceFeignClient {
         return requestService.findConfirmedRequest(ids);
     }
 
-
+    @Override
+    public boolean isUserParticipatedInEvent(long userId, long eventId) {
+        return requestService.isUserParticipatedInEvent(userId, eventId);
+    }
 }
