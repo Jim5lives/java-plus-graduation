@@ -15,11 +15,11 @@ import java.util.Collection;
 public interface EventService {
     Collection<EventShortDto> findBy(PrivateSearchEventDto privateSearchEventDto);
 
-    EventFullDto findBy(ParamEventDto paramEventDto, String ip);
+    EventFullDto findBy(ParamEventDto paramEventDto);
 
     Collection<EventFullDto> findEventsAdmin(AdminSearchEventDto adminSearchEventDto);
 
-    EventFullDto findEventByIdPublic(long id, String ip);
+    EventFullDto findEventByIdPublic(long id, long userId);
 
     Collection<EventShortDto> findEventsPublic(PublicSearchEventParams params);
 
@@ -30,4 +30,8 @@ public interface EventService {
     EventFullDto update(long eventId, UpdateEventUserRequest updateEvent);
 
     EventWithInitiatorDto findBy(long eventId);
+
+    Collection<EventShortDto> findRecommendations(long userId);
+
+    void addLike(long eventId, long userId);
 }

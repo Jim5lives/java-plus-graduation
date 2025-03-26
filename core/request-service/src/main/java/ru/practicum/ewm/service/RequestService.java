@@ -21,4 +21,6 @@ public interface RequestService {
                                                  EventRequestStatusUpdateRequest updateRequest);
 
     List<RequestCountDto> findConfirmedRequest(List<Long> ids);
+
+    boolean isUserParticipatedInEvent(long userId, long eventId);
 }
